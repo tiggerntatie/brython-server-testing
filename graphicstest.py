@@ -8,6 +8,19 @@ Stage = JSConstructor(window.PIXI.Stage)
 Sprite = JSConstructor(window.PIXI.Sprite)
 GRAPHICS = JSConstructor(window.PIXI.Graphics)
 
+interactive = True
+stage = Stage(0xF0F0F0, interactive)
+renderer = PIXI.autoDetectRenderer(1000, 650)
+#print(dir(document.body.append))
+document.body.appendChild(renderer.view)
+
+def animate(arg1):
+  window.requestAnimFrame(animate)
+  for s in sprites:
+    s.poll()
+  renderer.render(stage)
+
+window.requestAnimFrame(animate)
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
@@ -59,7 +72,7 @@ def keyCode(ev):
     print(ev.keyCode)
     
 
-document['body'].bind('keydown', keyCode)
+# document['body'].bind('keydown', keyCode)
 
 
 def onload(window):
@@ -72,6 +85,10 @@ def onload(window):
 
 w = window.open("", "")
 w.onload = onload(w)
+
+# make a bunch of bunnies
+staticsprites = [sprites.CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
+sprites = [sprites.CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 
 print("Testing Graphics")
