@@ -2,8 +2,8 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-#w = window.open("", "")
-w = window
+w = window.open("", "")
+#w = window
 
 PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
