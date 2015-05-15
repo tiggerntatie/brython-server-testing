@@ -6,9 +6,9 @@ from javascript import JSObject, JSConstructor
 w = window
 
 PIXI = JSObject(window.PIXI)
-Stage = JSConstructor(PIXI.Stage)
-Sprite = JSConstructor(PIXI.Sprite)
-GRAPHICS = JSConstructor(PIXI.Graphics)
+Stage = JSConstructor(window.PIXI.Stage)
+Sprite = JSConstructor(window.PIXI.Sprite)
+GRAPHICS = JSConstructor(window.PIXI.Graphics)
 
 interactive = True
 stage = Stage(0xF0F0F0, interactive)
