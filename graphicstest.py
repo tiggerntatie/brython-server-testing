@@ -2,25 +2,26 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
+w = window.open("", "")
 
-PIXI = JSObject(window.PIXI)
-Stage = JSConstructor(window.PIXI.Stage)
-Sprite = JSConstructor(window.PIXI.Sprite)
-GRAPHICS = JSConstructor(window.PIXI.Graphics)
+PIXI = JSObject(w.PIXI)
+Stage = JSConstructor(w.PIXI.Stage)
+Sprite = JSConstructor(w.PIXI.Sprite)
+GRAPHICS = JSConstructor(w.PIXI.Graphics)
 
 interactive = True
 stage = Stage(0xF0F0F0, interactive)
 renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
-document.body.appendChild(renderer.view)
+w.document.body.appendChild(renderer.view)
 
-def animate(arg1):
-  window.requestAnimFrame(animate)
+def animate(win):
+  win.requestAnimFrame(animate)
   for s in sprites:
     s.poll()
   renderer.render(stage)
 
-window.requestAnimFrame(animate)
+window.requestAnimFrame(animate, w)
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
@@ -74,17 +75,6 @@ def keyCode(ev):
 
 # document['body'].bind('keydown', keyCode)
 
-
-def onload(window):
-    canvas = window.document.createElement('canvas')
-    canvas.setAttribute('width','800')
-    canvas.setAttribute('height','500')
-    canvas.setAttribute('style','border:1px solid #000000;')
-    window.document.body.appendChild(canvas)
-    
-
-w = window.open("", "")
-w.onload = onload(w)
 
 # make a bunch of bunnies
 staticsprites = [sprites.CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
