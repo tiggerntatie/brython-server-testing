@@ -2,12 +2,13 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-w = window.open("", "")
+#w = window.open("", "")
+w = window
 
-PIXI = JSObject(w.PIXI)
-Stage = JSConstructor(w.PIXI.Stage)
-Sprite = JSConstructor(w.PIXI.Sprite)
-GRAPHICS = JSConstructor(w.PIXI.Graphics)
+PIXI = JSObject(window.PIXI)
+Stage = JSConstructor(PIXI.Stage)
+Sprite = JSConstructor(PIXI.Sprite)
+GRAPHICS = JSConstructor(PIXI.Graphics)
 
 interactive = True
 stage = Stage(0xF0F0F0, interactive)
@@ -15,13 +16,13 @@ renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
 w.document.body.appendChild(renderer.view)
 
-def animate(win):
-  win.requestAnimFrame(animate)
+def animate(arg1):
+  window.requestAnimFrame(animate)
   for s in sprites:
     s.poll()
   renderer.render(stage)
 
-window.requestAnimFrame(animate, w)
+window.requestAnimFrame(animate)
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
@@ -77,8 +78,8 @@ def keyCode(ev):
 
 
 # make a bunch of bunnies
-staticsprites = [sprites.CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
-sprites = [sprites.CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
+staticsprites = [CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
+sprites = [CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 
 print("Testing Graphics")
