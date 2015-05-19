@@ -1,10 +1,6 @@
 from browser import window, document
-from browser.timer import request_animation_frame as raf
 from random import randint
 from javascript import JSObject, JSConstructor
-
-window.x = 5
-print(window.x)
 
 window.PIXI = JSObject(window.PIXI)
 window.Stage = JSConstructor(window.PIXI.Stage)
