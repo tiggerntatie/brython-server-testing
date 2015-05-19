@@ -74,10 +74,10 @@ staticsprites = [CircleSprite(stage, randint(50,950),randint(50,600)) for x in r
 sprites = [CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 def animate(arg1):
-  window.requestAnimFrame(animate)
   for s in sprites:
     s.poll()
   renderer.render(stage)
+  window.requestAnimFrame(animate)
 
 # Start things rolling along.
 window.requestAnimFrame(animate)
