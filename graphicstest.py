@@ -8,13 +8,15 @@ PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
 Sprite = JSConstructor(window.PIXI.Sprite)
 GRAPHICS = JSConstructor(window.PIXI.Graphics)
+RENDERER = JSConstrutor(window.PIXI.autoDetectRenderer) #
 
 
 nloops = 0
 
 interactive = True
 stage = Stage(0xF0F0F0, interactive)
-renderer = PIXI.autoDetectRenderer(1000, 650)
+renderer = RENDERER(1000,650)
+#renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
 w.document.body.appendChild(renderer.view)
 
