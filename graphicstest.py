@@ -24,12 +24,12 @@ def animate(fake):
   nloops += 1
   if nloops > 100:
     return
-  raf(animate)
+  requestAnimationFrame(animate)
   for s in sprites:
     s.poll()
   renderer.render(stage)
 
-raf(animate)
+requestAnimationFrame(animate)
 
 
 
