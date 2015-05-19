@@ -2,8 +2,13 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-nloops = 0
+PIXI = JSObject(window.PIXI)
+Stage = JSConstructor(window.PIXI.Stage)
+Sprite = JSConstructor(window.PIXI.Sprite)
+GRAPHICS = JSConstructor(window.PIXI.Graphics)
 
+
+nloops = 0
 w = window.open("", "")
 
 interactive = True
@@ -22,12 +27,6 @@ def animate(arg1):
   renderer.render(stage)
 
 window.requestAnimFrame(animate)
-
-
-PIXI = JSObject(window.PIXI)
-Stage = JSConstructor(window.PIXI.Stage)
-Sprite = JSConstructor(window.PIXI.Sprite)
-GRAPHICS = JSConstructor(window.PIXI.Graphics)
 
 
 class BunnySprite(object):
