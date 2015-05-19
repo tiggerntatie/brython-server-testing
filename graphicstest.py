@@ -8,7 +8,7 @@ PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
 Sprite = JSConstructor(window.PIXI.Sprite)
 GRAPHICS = JSConstructor(window.PIXI.Graphics)
-RENDERER = JSConstrutor(window.PIXI.autoDetectRenderer) #
+RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
 
 
 nloops = 0
@@ -16,13 +16,12 @@ nloops = 0
 interactive = True
 stage = Stage(0xF0F0F0, interactive)
 renderer = RENDERER(1000,650)
-#renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
 w.document.body.appendChild(renderer.view)
 
 
-def animate(arg1):
-  window.requestAnimFrame(animate)
+def animate(stage):
+  window.requestAnimFrame(animate, stage)
   nloops += 1
   if nloops > 100:
       return
@@ -30,7 +29,7 @@ def animate(arg1):
     s.poll()
   renderer.render(stage)
 
-window.requestAnimFrame(animate)
+window.requestAnimFrame(animate, stage)
 
 
 
