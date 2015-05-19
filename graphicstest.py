@@ -22,10 +22,10 @@ w.document.body.appendChild(renderer.view)
 
 
 def animate(fake):
-  raf(animate)
   nloops += 1
   if nloops > 100:
-      return
+    return
+  raf(animate)
   for s in sprites:
     s.poll()
   renderer.render(stage)
