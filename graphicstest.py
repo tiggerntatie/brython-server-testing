@@ -16,12 +16,6 @@ renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
 w.document.body.appendChild(renderer.view)
 
-def animate(arg1):
-  window.requestAnimFrame(animate)
-  for s in sprites:
-    s.poll()
-  renderer.render(stage)
-
 class BunnySprite(object):
     def __init__(self, stage, x, y):
         self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
@@ -85,6 +79,7 @@ def animate(arg1):
     s.poll()
   renderer.render(stage)
 
+# Start things rolling..
 window.requestAnimFrame(animate)
 
 print("Testing Graphics")
