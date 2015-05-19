@@ -3,27 +3,27 @@ from browser.timer import request_animation_frame as raf
 from random import randint
 from javascript import JSObject, JSConstructor
 
-if (typeof window.PIXI == 'undefined') {
+if (typeof window.PIXI === 'undefined') {
     window.PIXI = JSObject(window.PIXI)
 }
-if (typeof window.Stage == 'undefined') {
+if (typeof window.Stage === 'undefined') {
     window.Stage = JSConstructor(window.PIXI.Stage)
 }
-if (typeof window.Sprite == 'undefined') {
+if (typeof window.Sprite === 'undefined') {
     window.Sprite = JSConstructor(window.PIXI.Sprite)
 }
-if (typeof window.GRAPHICS == 'undefined') {
+if (typeof window.GRAPHICS === 'undefined') {
     window.GRAPHICS = JSConstructor(window.PIXI.Graphics)
 }
-if (typeof window.RENDERER == 'undefined') {
+if (typeof window.RENDERER === 'undefined') {
     window.RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
 }
 
 interactive = True
-if (typeof window.STAGE  == 'undefined') {
+if (typeof window.STAGE  === 'undefined') {
     STAGE = Stage(0xF0F0F0, interactive)
 }
-if (typeof window.Renderer == 'undefined') {
+if (typeof window.Renderer === 'undefined') {
     _renderer = RENDERER(1000,650)
 }
 #print(dir(document.body.append))
