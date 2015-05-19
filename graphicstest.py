@@ -2,7 +2,7 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-#w = window.open("", "")
+w = window.open("", "")
 
 PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
@@ -16,7 +16,7 @@ interactive = True
 stage = Stage(0xF0F0F0, interactive)
 renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
-document.body.appendChild(renderer.view)
+w.document.body.appendChild(renderer.view)
 
 
 def animate(arg1):
@@ -35,7 +35,8 @@ window.requestAnimFrame(animate)
 class BunnySprite(object):
     def __init__(self, stage, x, y):
         self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
-        self.sprite.interactive = True
+        #self.sprite.interactive = True
+        self.sprite.setInteractive(true)
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
         self.sprite.position.x = x
@@ -68,7 +69,8 @@ class CircleSprite(BunnySprite):
         Graphics.lineStyle(5, randint(0,255)*0x10000+randint(0,255)*0x100+randint(0,255), 1)
         circle = Graphics.drawCircle(0,0,25)
         self.sprite = Sprite(circle.generateTexture())
-        self.sprite.interactive = True
+        #self.sprite.interactive = True
+        self.sprite.setInteractive(true)
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
         self.sprite.position.x = x
