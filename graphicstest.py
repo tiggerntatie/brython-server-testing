@@ -22,8 +22,6 @@ def animate(arg1):
     s.poll()
   renderer.render(stage)
 
-window.requestAnimFrame(animate)
-
 class BunnySprite(object):
     def __init__(self, stage, x, y):
         self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
@@ -81,6 +79,7 @@ def keyCode(ev):
 staticsprites = [CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
 sprites = [CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
+window.requestAnimFrame(animate)
 
 print("Testing Graphics")
 
