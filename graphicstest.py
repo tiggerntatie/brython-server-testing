@@ -21,9 +21,9 @@ renderer = RENDERER(1000,650)
 w.document.body.appendChild(renderer.view)
 
 def animate(fake):
-  nloops += 1
-  if nloops > 1000:
-    return
+  #nloops += 1
+  #if nloops > 1000:
+  #  return
   w.requestAnimationFrame(animate)
   for s in sprites:
     s.poll()
