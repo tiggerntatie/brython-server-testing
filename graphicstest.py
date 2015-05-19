@@ -1,4 +1,5 @@
 from browser import window, document
+from browser.timer import request_animation_frame as raf
 from random import randint
 from javascript import JSObject, JSConstructor
 
@@ -20,8 +21,8 @@ renderer = RENDERER(1000,650)
 w.document.body.appendChild(renderer.view)
 
 
-def animate(stage):
-  window.requestAnimFrame(animate, stage)
+def animate(fake):
+  raf(animate)
   nloops += 1
   if nloops > 100:
       return
@@ -29,7 +30,7 @@ def animate(stage):
     s.poll()
   renderer.render(stage)
 
-window.requestAnimFrame(animate, stage)
+raf(animate)
 
 
 
