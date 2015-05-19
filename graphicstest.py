@@ -40,6 +40,7 @@ def animate(fake):
     s.poll()
   TestSprite.position.x += 1 ####
   renderer.render(stage)
+  print(TestSprite.position.x)
 
 raf(animate)
 
