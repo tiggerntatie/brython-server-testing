@@ -10,8 +10,8 @@ window.GRAPHICS = JSConstructor(window.PIXI.Graphics)
 window.RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
 
 interactive = True
-window.STAGE = Stage(0xF0F0F0, interactive)
-window._renderer = RENDERER(1000,650)
+window.STAGE = window.Stage(0xF0F0F0, interactive)
+window._renderer = window.RENDERER(1000,650)
 
 #print(dir(document.body.append))
 w = window.open("", "")
@@ -33,7 +33,7 @@ w.requestAnimationFrame(animate)
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
-        self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
+        self.sprite = window.Sprite(PIXI.Texture.fromImage("bunny.png"))
         self.sprite.interactive = True
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
@@ -63,10 +63,10 @@ class BunnySprite(object):
 
 class CircleSprite(BunnySprite):
     def __init__(self, stage, x, y):
-        Graphics = GRAPHICS()
+        Graphics = window.GRAPHICS()
         Graphics.lineStyle(5, randint(0,255)*0x10000+randint(0,255)*0x100+randint(0,255), 1)
         circle = Graphics.drawCircle(0,0,25)
-        self.sprite = Sprite(circle.generateTexture())
+        self.sprite = window.Sprite(circle.generateTexture())
         self.sprite.interactive = True
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
