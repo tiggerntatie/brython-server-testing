@@ -79,7 +79,7 @@ def keyCode(ev):
     print(ev.keyCode)
     
 
-# document['body'].bind('keydown', keyCode)
+w.document['body'].bind('keydown', keyCode)
 
 
 # make a bunch of bunnies
