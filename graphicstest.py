@@ -79,7 +79,6 @@ def animate(arg1):
   renderer.render(stage)
   window.requestAnimFrame(animate)
 
-# Start things rolling along.
 window.requestAnimFrame(animate)
 
 print("Testing Graphics")
