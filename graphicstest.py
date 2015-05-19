@@ -22,14 +22,14 @@ w.document.body.appendChild(renderer.view)
 
 def animate(fake):
   nloops += 1
-  if nloops > 100:
+  if nloops > 1000:
     return
-  requestAnimationFrame(animate)
+  w.requestAnimationFrame(animate)
   for s in sprites:
     s.poll()
   renderer.render(stage)
 
-requestAnimationFrame(animate)
+w.requestAnimationFrame(animate)
 
 
 
