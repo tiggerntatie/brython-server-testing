@@ -2,6 +2,8 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
+w = window.open("", "")
+
 PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
 Sprite = JSConstructor(window.PIXI.Sprite)
@@ -9,7 +11,6 @@ GRAPHICS = JSConstructor(window.PIXI.Graphics)
 
 
 nloops = 0
-w = window.open("", "")
 
 interactive = True
 stage = Stage(0xF0F0F0, interactive)
@@ -79,7 +80,7 @@ def keyCode(ev):
     print(ev.keyCode)
     
 
-w.document['body'].bind('keydown', keyCode)
+#document['body'].bind('keydown', keyCode)
 
 
 # make a bunch of bunnies
