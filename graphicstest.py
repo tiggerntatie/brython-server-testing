@@ -2,7 +2,7 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-w = window.open("", "")
+#w = window.open("", "")
 
 PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
@@ -16,7 +16,7 @@ interactive = True
 stage = Stage(0xF0F0F0, interactive)
 renderer = PIXI.autoDetectRenderer(1000, 650)
 #print(dir(document.body.append))
-w.document.body.appendChild(renderer.view)
+document.body.appendChild(renderer.view)
 
 
 def animate(arg1):
