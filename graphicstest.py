@@ -20,17 +20,6 @@ renderer = RENDERER(1000,650)
 #print(dir(document.body.append))
 w.document.body.appendChild(renderer.view)
 
-####################
-Graphics = GRAPHICS()
-Graphics.lineStyle(5, randint(0,255)*0x10000+randint(0,255)*0x100+randint(0,255), 1)
-circle = Graphics.drawCircle(0,0,25)
-TestSprite = Sprite(circle.generateTexture())
-TestSprite.position.x = 10
-TestSprite.position.y = 10
-
-stage.addChild(TestSprite)
-###################
-
 def animate(fake):
   nloops += 1
   if nloops > 100:
@@ -38,9 +27,6 @@ def animate(fake):
   raf(animate)
   for s in sprites:
     s.poll()
-  TestSprite.position.x += 1 ####
-  renderer.render(stage)
-  print(TestSprite.position.x)
 
 raf(animate)
 
