@@ -27,6 +27,7 @@ def animate(fake):
   raf(animate)
   for s in sprites:
     s.poll()
+  renderer.render(stage)
 
 raf(animate)
 
