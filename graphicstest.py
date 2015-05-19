@@ -84,8 +84,7 @@ def keyCode(ev):
 
 # make a bunch of bunnies
 staticsprites = [CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
-#sprites = [CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
-sprites = staticsprites[:5]
+sprites = [CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 print("Testing Graphics")
 
