@@ -79,7 +79,7 @@ def animate(arg1):
     s.poll()
   renderer.render(stage)
 
-# Start things rolling..
+# Start things rolling along.
 window.requestAnimFrame(animate)
 
 print("Testing Graphics")
