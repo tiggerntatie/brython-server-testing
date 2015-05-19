@@ -19,6 +19,19 @@ renderer = PIXI.autoDetectRenderer(1000, 650)
 w.document.body.appendChild(renderer.view)
 
 
+def animate(arg1):
+  window.requestAnimFrame(animate)
+  nloops += 1
+  if nloops > 100:
+      return
+  for s in sprites:
+    s.poll()
+  renderer.render(stage)
+
+window.requestAnimFrame(animate)
+
+
+
 class BunnySprite(object):
     def __init__(self, stage, x, y):
         self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
@@ -75,17 +88,6 @@ def keyCode(ev):
 # make a bunch of bunnies
 staticsprites = [CircleSprite(stage, randint(50,950),randint(50,600)) for x in range(200)]
 sprites = [CircleSprite(stage, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
-
-def animate(arg1):
-  window.requestAnimFrame(animate)
-  nloops += 1
-  if nloops > 100:
-      return
-  for s in sprites:
-    s.poll()
-  renderer.render(stage)
-
-window.requestAnimFrame(animate)
 
 
 
