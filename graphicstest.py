@@ -6,20 +6,14 @@ from javascript import JSObject, JSConstructor
 w = window.open("", "")
 
 PIXI = JSObject(window.PIXI)
-Stage = JSConstructor(PIXI.Stage)
+Stage = JSConstructor(PIXI.Container)
 Sprite = JSConstructor(PIXI.Sprite)
 GRAPHICS = JSConstructor(PIXI.Graphics)
-# RENDERER = PIXI.autoDetectRenderer
-"""
-Stage = JSConstructor(window.PIXI.Stage)
-Sprite = JSConstructor(window.PIXI.Sprite)
-GRAPHICS = JSConstructor(window.PIXI.Graphics)
-RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
-"""
 
 interactive = True
-STAGE = Stage(0xF0F0F0, interactive)
-RENDERER = PIXI.autoDetectRenderer(1000,650)
+#STAGE = Stage(0xF0F0F0, interactive)
+STAGE = Stage()
+RENDERER = PIXI.autoDetectRenderer(1000,650, transparent=True)
 
 w.document.body.appendChild(RENDERER.view)
 nloops = 0
