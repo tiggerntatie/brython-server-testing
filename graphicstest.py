@@ -2,18 +2,14 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-def printsomething():
-    print("something")
 
-w = window.open("bsgraphics.html", "")
-w.onload = 'printsomething()'
+w = window.open("", "")
 
-"""
-PIXI = JSObject(w.PIXI)
-Stage = JSConstructor(w.PIXI.Stage)
-Sprite = JSConstructor(w.PIXI.Sprite)
-GRAPHICS = JSConstructor(w.PIXI.Graphics)
-RENDERER = JSConstructor(w.PIXI.autoDetectRenderer) #
+PIXI = JSObject(window.PIXI)
+Stage = JSConstructor(window.PIXI.Stage)
+Sprite = JSConstructor(window.PIXI.Sprite)
+GRAPHICS = JSConstructor(window.PIXI.Graphics)
+RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
 
 interactive = True
 STAGE = Stage(0xF0F0F0, interactive)
@@ -33,7 +29,6 @@ def animate(fake):
 
 w.requestAnimationFrame(animate)
 
-"""
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
@@ -89,10 +84,8 @@ def keyCode(ev):
 
 
 # make a bunch of bunnies
-"""
 staticsprites = [CircleSprite(STAGE, randint(50,950),randint(50,600)) for x in range(200)]
 sprites = [CircleSprite(STAGE, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
-"""
 
 
 print("Testing Graphics")
