@@ -76,10 +76,7 @@ class CircleSprite(BunnySprite):
 def keyCode(ev):
     print(ev.keyCode)
     
-
-#w.document['html'].bind('keydown', keyCode)
-print(dir(w))
-
+w.document.body.bind('keydown', keyCode)
 
 # make a bunch of bunnies
 staticsprites = [CircleSprite(STAGE, randint(50,950),randint(50,600)) for x in range(200)]
