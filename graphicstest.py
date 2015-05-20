@@ -6,10 +6,16 @@ from javascript import JSObject, JSConstructor
 w = window.open("", "")
 
 PIXI = JSObject(window.PIXI)
+Stage = PIXI.Stage
+Sprite = PIXI.Sprite
+GRAPHICS = PIXI.Graphics
+RENDERER = PIXI.autoDetectRenderer
+"""
 Stage = JSConstructor(window.PIXI.Stage)
 Sprite = JSConstructor(window.PIXI.Sprite)
 GRAPHICS = JSConstructor(window.PIXI.Graphics)
 RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
+"""
 
 interactive = True
 STAGE = Stage(0xF0F0F0, interactive)
