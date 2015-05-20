@@ -10,10 +10,8 @@ Stage = JSConstructor(PIXI.Container)
 Sprite = JSConstructor(PIXI.Sprite)
 GRAPHICS = JSConstructor(PIXI.Graphics)
 
-interactive = True
-#STAGE = Stage(0xF0F0F0, interactive)
 STAGE = Stage()
-RENDERER = PIXI.autoDetectRenderer(1000,650, transparent=True)
+RENDERER = PIXI.autoDetectRenderer(1000,650, {'transparent':True})
 
 w.document.body.appendChild(RENDERER.view)
 nloops = 0
@@ -79,7 +77,8 @@ def keyCode(ev):
     print(ev.keyCode)
     
 
-#document['body'].bind('keydown', keyCode)
+#w.document['html'].bind('keydown', keyCode)
+print(dir(w))
 
 
 # make a bunch of bunnies
