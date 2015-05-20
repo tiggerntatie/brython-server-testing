@@ -6,10 +6,10 @@ from javascript import JSObject, JSConstructor
 w = window.open("", "")
 
 PIXI = JSObject(window.PIXI)
-Stage = PIXI.Stage
-Sprite = PIXI.Sprite
-GRAPHICS = PIXI.Graphics
-RENDERER = PIXI.autoDetectRenderer
+Stage = JSConstructor(PIXI.Stage)
+Sprite = JSConstructor(PIXI.Sprite)
+GRAPHICS = JSConstructor(PIXI.Graphics)
+# RENDERER = PIXI.autoDetectRenderer
 """
 Stage = JSConstructor(window.PIXI.Stage)
 Sprite = JSConstructor(window.PIXI.Sprite)
@@ -19,7 +19,7 @@ RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
 
 interactive = True
 STAGE = Stage(0xF0F0F0, interactive)
-_renderer = RENDERER(1000,650)
+RENDERER = PIXI.autoDetectRenderer(1000,650)
 
 w.document.body.appendChild(_renderer.view)
 nloops = 0
@@ -31,7 +31,7 @@ def animate(fake):
   w.requestAnimationFrame(animate)
   for s in sprites:
     s.poll()
-  _renderer.render(STAGE)
+  RENDERER.render(STAGE)
 
 
 
