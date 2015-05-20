@@ -9,8 +9,8 @@ GRAPHICS = JSConstructor(window.PIXI.Graphics)
 RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
 
 interactive = True
-STAGE = window.Stage(0xF0F0F0, interactive)
-_renderer = window.RENDERER(1000,650)
+STAGE = Stage(0xF0F0F0, interactive)
+_renderer = RENDERER(1000,650)
 
 #print(dir(document.body.append))
 w = window.open("", "")
@@ -65,7 +65,7 @@ class CircleSprite(BunnySprite):
         Graphics = GRAPHICS()
         Graphics.lineStyle(5, randint(0,255)*0x10000+randint(0,255)*0x100+randint(0,255), 1)
         circle = Graphics.drawCircle(0,0,25)
-        self.sprite = window.Sprite(circle.generateTexture())
+        self.sprite = Sprite(circle.generateTexture())
         self.sprite.interactive = True
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
