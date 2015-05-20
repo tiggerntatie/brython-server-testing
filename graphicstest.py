@@ -15,8 +15,8 @@ _renderer = RENDERER(1000,650)
 #print(dir(document.body.append))
 w = window.open("", "")
 w.document.body.appendChild(_renderer.view)
-
 nloops = 0
+
 def animate(fake):
   nloops += 1
   if not nloops % 100:
