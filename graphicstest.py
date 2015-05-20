@@ -3,7 +3,7 @@ from random import randint
 from javascript import JSObject, JSConstructor
 
 
-#w = window.open("", "")
+w = window.open("", "")
 
 PIXI = JSObject(window.PIXI)
 Stage = JSConstructor(window.PIXI.Stage)
@@ -15,17 +15,17 @@ interactive = True
 STAGE = Stage(0xF0F0F0, interactive)
 _renderer = RENDERER(1000,650)
 
-document.body.appendChild(_renderer.view)
+w.document.body.appendChild(_renderer.view)
 nloops = 0
 
 def animate(fake):
   nloops += 1
   if not nloops % 100:
     print(nloops)
-  requestAnimationFrame(animate)
+  w.requestAnimationFrame(animate)
   for s in sprites:
     s.poll()
-  renderer.render(STAGE)
+  _renderer.render(STAGE)
 
 
 
@@ -89,5 +89,5 @@ sprites = [CircleSprite(STAGE, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 print("Testing Graphics")
 
-requestAnimationFrame(animate)
+w.requestAnimationFrame(animate)
 
