@@ -17,9 +17,6 @@ w.document.body.appendChild(RENDERER.view)
 nloops = 0
 
 def animate(fake):
-  nloops += 1
-  if not nloops % 100:
-    print(nloops)
   w.requestAnimationFrame(animate)
   for s in sprites:
     s.poll()
