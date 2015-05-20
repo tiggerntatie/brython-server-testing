@@ -2,18 +2,18 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 
-PIXI = JSObject(window.PIXI)
-Stage = JSConstructor(window.PIXI.Stage)
-Sprite = JSConstructor(window.PIXI.Sprite)
-GRAPHICS = JSConstructor(window.PIXI.Graphics)
-RENDERER = JSConstructor(window.PIXI.autoDetectRenderer) #
+w = window.open("bsgraphics.html", "")
+
+PIXI = JSObject(w.PIXI)
+Stage = JSConstructor(w.PIXI.Stage)
+Sprite = JSConstructor(w.PIXI.Sprite)
+GRAPHICS = JSConstructor(w.PIXI.Graphics)
+RENDERER = JSConstructor(w.PIXI.autoDetectRenderer) #
 
 interactive = True
 STAGE = Stage(0xF0F0F0, interactive)
 _renderer = RENDERER(1000,650)
 
-#print(dir(document.body.append))
-w = window.open("", "")
 w.document.body.appendChild(_renderer.view)
 nloops = 0
 
