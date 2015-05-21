@@ -26,7 +26,7 @@ def animate(fake):
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
-        self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png", True))
+        self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
         self.sprite.interactive = True
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
