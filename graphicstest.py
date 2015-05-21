@@ -26,7 +26,7 @@ def animate(fake):
 
 class BunnySprite(object):
     def __init__(self, stage, x, y):
-        self.sprite = window.Sprite(PIXI.Texture.fromImage("bunny.png"))
+        self.sprite = Sprite(PIXI.Texture.fromImage("bunny.png"))
         self.sprite.interactive = True
         self.sprite.anchor.x = 0.5
         self.sprite.anchor.y = 0.5
@@ -81,7 +81,7 @@ w.document.body.bind('keydown', keyCode)
 w.document.body.bind('mousedown', mouseCode)
 
 # make a bunch of bunnies
-staticsprites = [CircleSprite(STAGE, randint(50,950),randint(50,600)) for x in range(200)]
+staticsprites = [BunnySprite(STAGE, randint(50,950),randint(50,600)) for x in range(200)]
 sprites = [CircleSprite(STAGE, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 
