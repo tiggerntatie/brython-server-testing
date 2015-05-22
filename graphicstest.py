@@ -81,7 +81,7 @@ w.document.body.bind('keydown', keyCode)
 w.document.body.bind('mousedown', mouseCode)
 
 # make a bunch of bunnies
-staticsprites = [BunnySprite(STAGE, randint(50,950),randint(50,600)) for x in range(200)]
+staticsprites = [CircleSprite(STAGE, randint(50,950),randint(50,600)) for x in range(200)]
 sprites = [CircleSprite(STAGE, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 
