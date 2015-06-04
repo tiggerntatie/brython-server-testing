@@ -1,6 +1,7 @@
 from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
+from threading import Thread
 
 
 w = window.open("", "")
@@ -87,4 +88,9 @@ sprites = [CircleSprite(STAGE, 50+(x*15)%100,(20+x*2)%30) for x in range(5)]
 
 print("Testing Graphics")
 
-w.requestAnimationFrame(animate)
+def startRunLoop():
+    w.requestAnimationFrame(animate)
+
+loop = Thread(startRunLoop)
+
+loop.run()
