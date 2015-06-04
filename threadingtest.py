@@ -2,6 +2,7 @@ from browser import window, document
 from random import randint
 from javascript import JSObject, JSConstructor
 from threading import Thread
+from time import sleep
 
 
 w = window.open("", "")
@@ -95,7 +96,14 @@ loop = Thread(None, startRunLoop)
 
 loop.run()
 
-newsprites = [CircleSprite(STAGE,99+x ,99) for x in range(10)]
+c = CircleSprite(STAGE,99,99)
+c2 = CircleSprite(STAGE,99,199)
+
+for i in range(10500):
+    sleep(0)
+    c.sprite.position.x = i % 300
+
+# c.sprite.position.x = 200
 
 
 
