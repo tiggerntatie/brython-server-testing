@@ -91,6 +91,13 @@ print("Testing Graphics")
 def startRunLoop():
     w.requestAnimationFrame(animate)
 
-loop = Thread(startRunLoop)
+loop = Thread(None, startRunLoop)
 
 loop.run()
+
+newsprites = [CircleSprite(STAGE,99+x ,99) for x in range(10)]
+
+
+
+
+
