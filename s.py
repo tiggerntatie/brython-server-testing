@@ -22,16 +22,16 @@ class Bunny(Sprite):
         
     def mousedown(self, event):
         # capture any mouse down within 50 pixels
-        self.deltax = (self.x + self.width//2) - event.x 
-        self.deltay = (self.y + self.height//2) - event.y
+        self.deltax = event.x - (self.x + self.width//2) 
+        self.deltay = event.y - (self.y + self.height//2)
         if abs(self.deltax) < 50 and abs(self.deltay) < 50:
             self.dragging = True
             event.consumed = True
             
     def mousemove(self, event):
         if self.dragging:
-            self.x = event.x - self.deltax
-            self.y = event.y - self.deltay
+            self.x = event.x - self.deltax - self.width//2
+            self.y = event.y - self.deltay - self.height//2
             event.consumed = True
             
     def mouseup(self, event):
