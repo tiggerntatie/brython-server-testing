@@ -54,7 +54,7 @@ class DemoApp(App):
         """
         Override step to perform action on each frame update
         """
-        for bunny in bunnies:
+        for bunny in self.spritelist:
             bunny.step()
 
 
