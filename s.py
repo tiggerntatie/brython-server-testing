@@ -16,14 +16,14 @@ class Bunny(Sprite):
         """
         Every now and then a bunny hops...
         """
-        if randint(0,1000) == 0:
+        if randint(0,500) == 0:
             self.x += randint(-50,50)
             self.y += randint(-50,50)
         
     def mousedown(self, event):
         # capture any mouse down within 50 pixels
-        self.deltax = self.x - event.x 
-        self.deltay = self.y - event.y
+        self.deltax = (self.x + self.width//2) - event.x 
+        self.deltay = (self.y + self.height//2) - event.y
         if abs(self.deltax) < 50 and abs(self.deltay) < 50:
             self.dragging = True
             event.consumed = True
