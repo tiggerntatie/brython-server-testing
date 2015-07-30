@@ -59,7 +59,7 @@ class DemoApp(App):
 
 
 
-# Create the app, with a 500x500 pixel stage
-app = DemoApp(500,500)  
+# Create the app
+app = DemoApp()  
 # Run the app
 app.run()
