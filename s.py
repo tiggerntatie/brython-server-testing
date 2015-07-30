@@ -1,5 +1,5 @@
 from ggame import App, ImageAsset, Sprite, MouseEvent
-from random import randint
+from random import random, randint
 
 class Bunny(Sprite):
     
@@ -16,7 +16,7 @@ class Bunny(Sprite):
         """
         Every now and then a bunny hops...
         """
-        if randint(0,500) == 0:
+        if random() < 0.001:
             self.x += randint(-50,50)
             self.y += randint(-50,50)
         
@@ -26,6 +26,7 @@ class Bunny(Sprite):
         self.deltay = event.y - (self.y + self.height//2)
         if abs(self.deltax) < 50 and abs(self.deltay) < 50:
             self.dragging = True
+            # only drag one bunny at a time - consume the event
             event.consumed = True
             
     def mousemove(self, event):
@@ -44,7 +45,6 @@ class DemoApp(App):
     
     def __init__(self):
         super().__init__(500, 500)
-        # Create an image asset for the app
         bunny = ImageAsset(self, "ggame/bunny.png")
         # Create several bunnies at random locations
         for i in range(10):
