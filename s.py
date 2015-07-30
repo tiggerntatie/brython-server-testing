@@ -3,8 +3,10 @@ from random import random, randint
 
 class Bunny(Sprite):
     
-    def __init__(self, asset, position):
-        super().__init__(asset, position)
+    asset = ImageAsset("ggame/bunny.png")
+    
+    def __init__(self, app, position):
+        super().__init__(app, Bunny.asset, position)
         # register mouse events
         self.app.listenMouseEvent(MouseEvent.mousedown, self.mousedown)
         self.app.listenMouseEvent(MouseEvent.mouseup, self.mouseup)
@@ -45,8 +47,6 @@ class DemoApp(App):
     
     def __init__(self):
         super().__init__(500, 500)
-        bunny = ImageAsset(self, "ggame/bunny.png")
-        # Create several bunnies at random locations
         for i in range(10):
             Bunny(bunny, (randint(50,450),randint(50,450)))
         
