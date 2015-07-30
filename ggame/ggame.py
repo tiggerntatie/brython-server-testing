@@ -1,21 +1,14 @@
-from browser import window, document
-from javascript import JSObject, JSConstructor
-
-
-# depends on pixi.js, buzz.js
-
-
+from sysdeps import *
 
 class Frame(object):
 
 
-    def __init__(self, app, x, y, w, h):
-        self.app = app
+    def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
-        self.PIXI = app.PIXI_Rectangle(x,y,w,h)
+        self.GFX = GFX_Rectangle(x,y,w,h)
     
     @property
     def center(self):
@@ -30,10 +23,9 @@ class Frame(object):
         
 class ImageAsset(object):
 
-    def __init__(self, app, url):
-        self.app = app
+    def __init__(self, url):
         self.url = url
-        self.PIXI = self.app.PIXI_Texture_fromImage(url, False)
+        self.GFX = GFX_Texture_fromImage(url, False)
 
 class Color(object):
 
@@ -61,73 +53,72 @@ class LineStyle(object):
 
 class GraphicsAsset(object):
     
-    def cleanup(self):
-        self.PIXI.destroy()
+    def destroy(self):
+        self.GFX.destroy()
 
 class CurveAsset(GraphicsAsset):
 
-    def __init__(self, app, line):
-        self.app = app
-        self.app.PIXI_Graphics.lineStyle(line.width, line.color.color, line.color.alpha)
+    def __init__(self, line):
+        GFX_Graphics.lineStyle(line.width, line.color.color, line.color.alpha)
 
 class ShapeAsset(CurveAsset):
 
-    def __init__(self, app, line, fill):
-        super().__init__(app, line)
-        self.app.PIXI_Graphics.beginFill(fill.color, fill.alpha)
+    def __init__(self, line, fill):
+        super().__init__(line)
+        GFX_Graphics.beginFill(fill.color, fill.alpha)
     
 
 class RectangleAsset(ShapeAsset):
 
-    def __init__(self, app, width, height, line, fill):
-        super().__init__(app, line, fill)
+    def __init__(self, width, height, line, fill):
+        super().__init__(line, fill)
         self.width = width
         self.height = height
-        self.PIXI = self.app.PIXI_Graphics.drawRect(0, 0, self.width, self.height)
-        self.PIXI.visible = False
+        self.GFX = GFX_Graphics.drawRect(0, 0, self.width, self.height)
+        self.GFX.visible = False
         
 
 class CircleAsset(ShapeAsset):
 
-    def __init__(self, app, radius, line, fill):
-        super().__init__(app, line, fill)
+    def __init__(self, radius, line, fill):
+        super().__init__(line, fill)
         self.radius = radius
-        self.PIXI = self.app.PIXI_Graphics.drawCircle(0, 0, self.radius)
-        self.PIXI.visible = False
+        self.GFX = GFX_Graphics.drawCircle(0, 0, self.radius)
+        self.GFX.visible = False
         
 class EllipseAsset(ShapeAsset):
 
-    def __init__(self, app, halfw, halfh, line, fill):
-        super().__init__(app, line, fill)
+    def __init__(self, halfw, halfh, line, fill):
+        super().__init__(line, fill)
         self.halfw = halfw
         self.halfh = halfh
-        self.PIXI = self.app.PIXI_Graphics.drawEllipse(0, 0, self.halfw, self.halfh)
-        self.PIXI.visible = False
+        self.GFX = GFX_Graphics.drawEllipse(0, 0, self.halfw, self.halfh)
+        self.GFX.visible = False
         
 class PolygonAsset(ShapeAsset):
 
-    def __init__(self, app, path, line, fill):
-        super().__init__(app, line, fill)
+    def __init__(self, path, line, fill):
+        super().__init__(line, fill)
         self.path = path
         jpath = []
         for point in self.path:
             jpath.extend(point)
-        self.PIXI = self.app.PIXI_Graphics.drawPolygon(jpath)
-        self.PIXI.visible = False
+        self.GFX = GFX_Graphics.drawPolygon(jpath)
+        self.GFX.visible = False
     
 
 class LineAsset(CurveAsset):
     
-    def __init__(self, app, x, y, line):
-        super().__init__(app, line)
+    def __init__(self, x, y, line):
+        super().__init__(line)
         self.deltaX = x
         self.deltaY = y
-        self.app.PIXI_Graphics.moveTo(0, 0)
-        self.PIXI = self.app.PIXI_Graphics.lineTo(self.deltaX, self.deltaY)
+        GFX_Graphics.moveTo(0, 0)
+        self.GFX = GFX_Graphics.lineTo(self.deltaX, self.deltaY)
 
 class TextAsset(GraphicsAsset):
     
-    def __init__(self, app, text, **kwargs):
+    def __init__(self, text, **kwargs):
         """
         app : the App reference
         text : text to display
@@ -138,25 +129,23 @@ class TextAsset(GraphicsAsset):
 
         """
 
-        self.app = app
         self.text = text
         self.style = kwargs.get('style', '20px Arial')
         self.width = kwargs.get('width', 100)
         self.fill = kwargs.get('fill', Color(0, 1))
         self.align = kwargs.get('align', 'left')
-        self.PIXI = self.app.PIXI_Text(self.text, 
+        self.GFX = GFX_Text(self.text, 
             {'font': self.style,
                 'fill' : self.fill.color,
                 'align' : self.align,
                 'wordWrap' : True,
                 'wordWrapWidth' : self.width,
                 })
-        self.PIXI.alpha = self.fill.alpha
-        self.PIXI.visible = False
+        self.GFX.alpha = self.fill.alpha
+        self.GFX.visible = False
         
     def clone(self):
-        return type(self)(self.app,
-            self.text,
+        return type(self)(self.text,
             style = self.style,
             width = self.width,
             fill = self.fill,
@@ -166,15 +155,15 @@ class TextAsset(GraphicsAsset):
 class Sprite(object):
     
     
-    def __init__(self, asset, position = (0,0), frame = False):
-        self.app = asset.app
+    def __init__(self, app, asset, position = (0,0), frame = False):
+        self.app = app
         if type(asset) == ImageAsset:
             self.asset = asset
             if (frame):
-                self.PIXI = self.app.PIXI_Sprite(
-                    self.app.PIXI_Texture(asset.PIXI, frame.PIXI))
+                self.GFX = GFX_Sprite(
+                    GFX_Texture(asset.GFX, frame.GFX))
             else:
-                self.PIXI = self.app.PIXI_Sprite(asset.PIXI)
+                self.GFX = GFX_Sprite(asset.GFX)
         elif type(asset) in [RectangleAsset, 
             CircleAsset, 
             EllipseAsset, 
@@ -182,47 +171,47 @@ class Sprite(object):
             LineAsset,
             ]:
             self.asset = asset
-            self.PIXI = asset.PIXI.clone()
-            self.PIXI.visible = True
+            self.GFX = asset.GFX.clone()
+            self.GFX.visible = True
         elif type(asset) in [TextAsset]:
             self.asset = asset.clone()
-            self.PIXI = self.asset.PIXI
-            self.PIXI.visible = True
+            self.GFX = self.asset.GFX
+            self.GFX.visible = True
         self.position = position
         self.app._add(self)
         
     @property
     def width(self):
-        return self.PIXI.width
+        return self.GFX.width
         
     @property
     def height(self):
-        return self.PIXI.height
+        return self.GFX.height
         
     @property
     def x(self):
-        return self.PIXI.position.x
+        return self.GFX.position.x
         
     @x.setter
     def x(self, value):
-        self.PIXI.position.x = value
+        self.GFX.position.x = value
         
     @property
     def y(self):
-        return self.PIXI.position.y
+        return self.GFX.position.y
         
     @y.setter
     def y(self, value):
-        self.PIXI.position.y = value
+        self.GFX.position.y = value
         
     @property
     def position(self):
-        return (self.PIXI.position.x, self.PIXI.position.y)
+        return (self.GFX.position.x, self.GFX.position.y)
         
     @position.setter
     def position(self, value):
-        self.PIXI.position.x = value[0]
-        self.PIXI.position.y = value[1]
+        self.GFX.position.x = value[0]
+        self.GFX.position.y = value[1]
         
     @property
     def visible(self):
@@ -230,17 +219,16 @@ class Sprite(object):
     
     @visible.setter
     def visible(self, value):
-        self.PIXI.visible = value
+        self.GFX.visible = value
 
-    def cleanup(self):
+    def destroy(self):
         self.app._remove(self)
-        self.asset.cleanup()
+        self.asset.destroy()
 
 
 class SoundAsset(object):
     
-    def __init__(self, app, url):
-        self.app = app
+    def __init__(self, url):
         self.url = url
 
         
@@ -248,30 +236,28 @@ class Sound(object):
 
     def __init__(self, asset):
         self.asset = asset
-        self.app = self.asset.app
-        self.BUZZ_Sound = JSConstructor(self.app.BUZZ.sound)
-        self.BUZZ = self.BUZZ_Sound(self.asset.url)
-        self.BUZZ.load()
+        self.SND = SND_Sound(self.asset.url)
+        self.SND.load()
         
     def play(self):
         self.stop()
-        self.BUZZ.play()
+        self.SND.play()
 
     def loop(self):
         self.stop()
-        self.BUZZ.loop()
-        self.BUZZ.play()
+        self.SND.loop()
+        self.SND.play()
         
     def stop(self):
-        self.BUZZ.stop()
+        self.SND.stop()
         
     @property
     def volume(self):
-        return self.BUZZ.getVolume()
+        return self.SND.getVolume()
         
     @volume.setter
     def volume(self, value):
-        self.BUZZ.setVolume(value)
+        self.SND.setVolume(value)
     
 
 class Event(object):
@@ -418,31 +404,21 @@ class KeyEvent(Event):
 class App(object):
     
     def __init__(self, width, height):
-        self.PIXI = JSObject(window.PIXI)
-        self.PIXI_Rectangle = JSConstructor(self.PIXI.Rectangle)
-        self.PIXI_Texture = JSObject(self.PIXI.Texture)
-        self.PIXI_Texture_fromImage = JSConstructor(self.PIXI_Texture.fromImage)
-        self.PIXI_Sprite = JSConstructor(self.PIXI.Sprite)
-        self.PIXI_Graphics = JSConstructor(self.PIXI.Graphics)()
-        self.PIXI_Text = JSConstructor(self.PIXI.Text)
-        self.BUZZ = JSObject(window.buzz)
-        self.w = window.open("", "")
-        self.w.onunload = self.cleanup
-        self.stage = JSConstructor(self.PIXI.Container)()
-        self.renderer = self.PIXI.autoDetectRenderer(width, height, 
-            {'transparent':True})
-        self.w.document.body.appendChild(self.renderer.view)
-        self.w.document.body.bind(KeyEvent.keydown, self._keyEvent)
-        self.w.document.body.bind(KeyEvent.keyup, self._keyEvent)
-        self.w.document.body.bind(KeyEvent.keypress, self._keyEvent)
-        self.w.document.body.bind(MouseEvent.mousewheel, self._mouseEvent)
-        self.w.document.body.bind(MouseEvent.mousemove, self._mouseEvent)
-        self.w.document.body.bind(MouseEvent.mousedown, self._mouseEvent)
-        self.w.document.body.bind(MouseEvent.mouseup, self._mouseEvent)
-        self.w.document.body.bind(MouseEvent.click, self._mouseEvent)
-        self.w.document.body.bind(MouseEvent.dblclick, self._mouseEvent)
+        
+        self.win = GFX_Window(width, height, self.destroy)
+        
+        self.win.bind(KeyEvent.keydown, self._keyEvent)
+        self.win.bind(KeyEvent.keyup, self._keyEvent)
+        self.win.bind(KeyEvent.keypress, self._keyEvent)
+        self.win.bind(MouseEvent.mousewheel, self._mouseEvent)
+        self.win.bind(MouseEvent.mousemove, self._mouseEvent)
+        self.win.bind(MouseEvent.mousedown, self._mouseEvent)
+        self.win.bind(MouseEvent.mouseup, self._mouseEvent)
+        self.win.bind(MouseEvent.click, self._mouseEvent)
+        self.win.bind(MouseEvent.dblclick, self._mouseEvent)
         self.spritelist = []
         self.eventdict = {}
+
         
     def _routeEvent(self, event, evtlist):
         for callback in reversed(evtlist):
@@ -464,11 +440,11 @@ class App(object):
             self._routeEvent(evt, evtlist)
         
     def _add(self, obj):
-        self.stage.addChild(obj.PIXI)
+        self.win.add(obj.GFX)
         self.spritelist.append(obj)
         
     def _remove(self, obj):
-        self.stage.removeChild(obj.PIXI)
+        self.win.remove(obj.GFX)
         self.spritelist.remove(obj)
         
     def _animate(self, dummy):
@@ -476,12 +452,10 @@ class App(object):
             self.userfunc()
         else:
             self.step()
-        self.renderer.render(self.stage)
-        self.w.requestAnimationFrame(self._animate)
+        self.win.animate(self._animate)
 
-    def cleanup(self, dummy):
-        self.BUZZ.all().stop()
-        self.stage.destroy()
+    def destroy(self, dummy):
+        self.win.destroy()
 
     def listenKeyEvent(self, eventtype, key, callback):
         """
@@ -510,14 +484,14 @@ class App(object):
     
     def run(self, userfunc = None):
         self.userfunc = userfunc
-        self.w.requestAnimationFrame(self._animate)
+        self.win.animate(self._animate)
 
 if __name__ == '__main__':
 
     class bunnySprite(Sprite):
 
-        def __init__(self, asset, position = (0,0), frame = False):
-            super().__init__(asset, position, frame)
+        def __init__(self, app, asset, position = (0,0), frame = False):
+            super().__init__(app, asset, position, frame)
             self.app.listenKeyEvent(KeyEvent.keydown, "space", self.spaceKey)
             self.app.listenKeyEvent(KeyEvent.keydown, "left arrow", self.leftKey)
             self.app.listenKeyEvent(KeyEvent.keydown, "right arrow", self.rightKey)
@@ -585,12 +559,12 @@ if __name__ == '__main__':
         def __init__(self, width, height):
             super().__init__(width, height)
             grassurl = "grass_texture239.jpg"
-            grass = ImageAsset(self, grassurl)
-            Sprite(grass, (0,0))
+            grass = ImageAsset(grassurl)
+            Sprite(self, grass, (0,0))
             
             self.bunnies = []
             bunnyurl = "bunny.png"
-            bunny = ImageAsset(self, bunnyurl)
+            bunny = ImageAsset(bunnyurl)
             
             fcolor = Color(0x5050ff, 0.8)
             lcolor = Color(0, 1)
@@ -600,17 +574,17 @@ if __name__ == '__main__':
             #ell = EllipseAsset(self, 50, 75, line, fcolor)
             #poly = PolygonAsset(self, [(0,0), (50,50), (50,100), (0,0)], line, fcolor)
             #line = LineAsset(self, -50, 75, line)
-            text = TextAsset(self, "what up? big long text string!")
+            text = TextAsset("what up? big long text string!")
             
             
             for x in range(50,500,150):
                 for y in range(50,500,150):
-                    self.bunnies.append(bunnySprite(text, (x,y)))
+                    self.bunnies.append(bunnySprite(self, text, (x,y)))
             self.direction = 5
-            self.spring = SoundAsset(self, "spring.wav")
+            self.spring = SoundAsset("spring.wav")
             self.springsound =Sound(self.spring)
             self.springsound.loop()
-            
+
 
         def step(self):
             for s in self.bunnies:
@@ -624,4 +598,3 @@ if __name__ == '__main__':
     
     
     app.run()
-
