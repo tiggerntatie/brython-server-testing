@@ -30,8 +30,8 @@ class Bunny(Sprite):
             
     def mousemove(self, event):
         if self.dragging:
-            self.x = event.x + self.deltax
-            self.y = event.y + self.deltay
+            self.x = (self.x + self.width//2) + self.deltax
+            self.y = (self.y + self.height//2) + self.deltay
             event.consumed = True
             
     def mouseup(self, event):
