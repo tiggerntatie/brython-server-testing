@@ -4,7 +4,7 @@ from random import randint
 class Bunny(Sprite):
     
     def __init__(self, asset, position):
-        super().__init__(self, asset, position)
+        super().__init__(asset, position)
         # register mouse events
         self.app.listenMouseEvent(MouseEvent.mousedown, self.mousedown)
         self.app.listenMouseEvent(MouseEvent.mouseup, self.mouseup)
@@ -43,7 +43,7 @@ class Bunny(Sprite):
 class DemoApp(App):
     
     def __init__(self):
-        super().__init__(self, 500, 500)
+        super().__init__(500, 500)
         # Create an image asset for the app
         bunny = ImageAsset(self, "ggame/bunny.png")
         # Create several bunnies
