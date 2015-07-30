@@ -48,7 +48,7 @@ class DemoApp(App):
     def __init__(self):
         super().__init__(500, 500)
         for i in range(10):
-            Bunny(bunny, (randint(50,450),randint(50,450)))
+            Bunny(self, (randint(50,450),randint(50,450)))
         
     def step(self):
         """
