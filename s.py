@@ -16,7 +16,7 @@ class Bunny(Sprite):
         """
         Every now and then a bunny hops...
         """
-        if randint(0,100) == 0:
+        if randint(0,1000) == 0:
             self.x += randint(-50,50)
             self.y += randint(-50,50)
         
@@ -46,7 +46,7 @@ class DemoApp(App):
         super().__init__(500, 500)
         # Create an image asset for the app
         bunny = ImageAsset(self, "ggame/bunny.png")
-        # Create several bunnies
+        # Create several bunnies at random locations
         for i in range(10):
             Bunny(bunny, (randint(50,450),randint(50,450)))
         
