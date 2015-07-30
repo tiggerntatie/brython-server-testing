@@ -1,6 +1,5 @@
 from ggame import App, ImageAsset, Sprite, MouseEvent
 from random import randint
-from math import abs
 
 class Bunny(Sprite):
     
