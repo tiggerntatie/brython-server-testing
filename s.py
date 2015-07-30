@@ -1,12 +1,10 @@
-from a import A
-        
-class S(object):
-    def __init__(self):
-        A.x.append(len(A.x))
-        
+from ggame import App, ImageAsset, Sprite
 
-if __name__ == '__main__':
-  s1 = S()
-  s2 = S()
-  s3 = S()
-  a = A()
+# Create the app, with a 500x500 pixel stage
+app = App(500,500)  
+# Create an image asset for the app
+grass = ImageAsset(app, "ggame/bunny.png")
+# Create a displayed object using the asset
+Sprite(grass, (100,100))
+# Run the app
+app.run()
