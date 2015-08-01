@@ -5,8 +5,8 @@ class Bunny(Sprite):
     
     asset = ImageAsset("ggame/bunny.png")
     
-    def __init__(self, app, position):
-        super().__init__(app, Bunny.asset, position)
+    def __init__(self, position):
+        super().__init__(Bunny.asset, position)
         # register mouse events
         self.app.listenMouseEvent(MouseEvent.mousedown, self.mousedown)
         self.app.listenMouseEvent(MouseEvent.mouseup, self.mouseup)
@@ -48,7 +48,7 @@ class DemoApp(App):
     def __init__(self):
         super().__init__(500, 500)
         for i in range(10):
-            Bunny(self, (randint(50,450),randint(50,450)))
+            Bunny((randint(50,450),randint(50,450)))
         
     def step(self):
         """
