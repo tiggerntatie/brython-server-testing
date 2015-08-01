@@ -6,7 +6,7 @@ class t(object):
         
 class u(t):
     
-    def sety(self, y = self.x)
+    def sety(self, y = self.x):
         self.y = y
 
 uinst = u()
