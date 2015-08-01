@@ -155,8 +155,8 @@ class TextAsset(GraphicsAsset):
 class Sprite(object):
     
     
-    def __init__(self, app, asset, position = (0,0), frame = False):
-        self.app = app
+    def __init__(self, asset, position = (0,0), frame = False):
+        self.app = App()
         if type(asset) == ImageAsset:
             self.asset = asset
             if (frame):
@@ -402,22 +402,42 @@ class KeyEvent(Event):
 
 
 class App(object):
-    
-    def __init__(self, width, height):
+    """
+    Singleton base class for ggame applications
+    """
+
+    __instance = None
+
+    def __new__(cls, *args):
+        if App.__instance is None:
+            App.__instance = object.__new__(cls)
+        return App.__instance
         
-        self.win = GFX_Window(width, height, self.destroy)
-        
-        self.win.bind(KeyEvent.keydown, self._keyEvent)
-        self.win.bind(KeyEvent.keyup, self._keyEvent)
-        self.win.bind(KeyEvent.keypress, self._keyEvent)
-        self.win.bind(MouseEvent.mousewheel, self._mouseEvent)
-        self.win.bind(MouseEvent.mousemove, self._mouseEvent)
-        self.win.bind(MouseEvent.mousedown, self._mouseEvent)
-        self.win.bind(MouseEvent.mouseup, self._mouseEvent)
-        self.win.bind(MouseEvent.click, self._mouseEvent)
-        self.win.bind(MouseEvent.dblclick, self._mouseEvent)
-        self.spritelist = []
-        self.eventdict = {}
+
+    def __init__(self, *args):
+
+        if not hasattr(self, 'spritelist'):
+            self.spritelist = []
+        if not hasattr(self, 'eventdict'):
+            self.eventdict = {}
+        if len(args) == 2:
+            self.width = args[0]
+            self.height = args[1]
+            self.win = GFX_Window(self.width, self.height, self.destroy)
+            # Add existing sprites to the window
+            if len(self.spritelist) > 0:
+                for sprite in self.spritelist:
+                    self.win.add(sprite.GFX)
+
+            self.win.bind(KeyEvent.keydown, self._keyEvent)
+            self.win.bind(KeyEvent.keyup, self._keyEvent)
+            self.win.bind(KeyEvent.keypress, self._keyEvent)
+            self.win.bind(MouseEvent.mousewheel, self._mouseEvent)
+            self.win.bind(MouseEvent.mousemove, self._mouseEvent)
+            self.win.bind(MouseEvent.mousedown, self._mouseEvent)
+            self.win.bind(MouseEvent.mouseup, self._mouseEvent)
+            self.win.bind(MouseEvent.click, self._mouseEvent)
+            self.win.bind(MouseEvent.dblclick, self._mouseEvent)
 
         
     def _routeEvent(self, event, evtlist):
@@ -440,7 +460,9 @@ class App(object):
             self._routeEvent(evt, evtlist)
         
     def _add(self, obj):
-        self.win.add(obj.GFX)
+        # only add sprites to window if it exists, otherwise will happen later
+        if hasattr(self, 'win'):
+            self.win.add(obj.GFX)
         self.spritelist.append(obj)
         
     def _remove(self, obj):
@@ -490,8 +512,8 @@ if __name__ == '__main__':
 
     class bunnySprite(Sprite):
 
-        def __init__(self, app, asset, position = (0,0), frame = False):
-            super().__init__(app, asset, position, frame)
+        def __init__(self, asset, position = (0,0), frame = False):
+            super().__init__(asset, position, frame)
             self.app.listenKeyEvent(KeyEvent.keydown, "space", self.spaceKey)
             self.app.listenKeyEvent(KeyEvent.keydown, "left arrow", self.leftKey)
             self.app.listenKeyEvent(KeyEvent.keydown, "right arrow", self.rightKey)
@@ -560,7 +582,7 @@ if __name__ == '__main__':
             super().__init__(width, height)
             grassurl = "grass_texture239.jpg"
             grass = ImageAsset(grassurl)
-            Sprite(self, grass, (0,0))
+            Sprite(grass, (0,0))
             
             self.bunnies = []
             bunnyurl = "bunny.png"
@@ -579,7 +601,7 @@ if __name__ == '__main__':
             
             for x in range(50,500,150):
                 for y in range(50,500,150):
-                    self.bunnies.append(bunnySprite(self, text, (x,y)))
+                    self.bunnies.append(bunnySprite(text, (x,y)))
             self.direction = 5
             self.spring = SoundAsset("spring.wav")
             self.springsound =Sound(self.spring)
