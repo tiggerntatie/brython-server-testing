@@ -58,7 +58,6 @@ class DemoApp(App):
             bunny.step()
 
 
-
 # Create the app
 app = DemoApp()  
 # Run the app
