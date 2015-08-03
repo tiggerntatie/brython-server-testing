@@ -20,12 +20,88 @@ class Frame(object):
         self.x += value[0] - c[0]
         self.y += value[1] - c[1]
 
-        
-class ImageAsset(object):
+class Asset(object):
 
-    def __init__(self, url):
+    def __init__(self):
+        self.index = 0
+        self.GFXlist = [None,]
+
+    @property
+    def GFX(self):
+        return self.GFXlist[0]
+        
+    @GFX.setter
+    def GFX(self, value):
+        self.GFXlist[0] = value
+        
+    def __len__(self):
+        return len(self.GFXlist)
+        
+    def __getitem__(self, key):
+        return self.GFXlist[key]
+        
+    def __setitem__(self, key, value):
+        self.GFXlist[key] = value
+        
+    def __iter__(self):
+        class Iter():
+            def __init__(self, image):
+                self.obj = image
+                self.n = len(image.GFXlist)
+                self.i = 0
+                
+            def __iter__(self):
+                return self
+                
+            def __next__(self):
+                if self.i ==self.n:
+                    raise StopIteration
+                self.i += 1
+                return self.obj.GFXlist[self.i]
+        return Iter(self)
+        
+        
+class ImageAsset(Asset):
+
+    def __init__(self, url, frame=None, qty=1, direction='horizontal', margin=0):
+        """
+        Create a texture asset from an image file name (or URL)
+        url : the name of the file
+        frame : a frame that defines a region inside the image (if desired)
+        qty : a string of qty frames may be defined for animation purposes
+        direction : 'horizontal' or 'vertical' orientation of animation frames
+        margin : the number of pixels between frames, if any
+        """
+        super().__init__()
         self.url = url
-        self.GFX = GFX_Texture_fromImage(url, False)
+        del self.GFXlist[0]
+        self.append(url, frame, qty, direction, margin)
+        
+    def _subframe(self, texture, frame):
+        return GFX_Texture(texture, frame.GFX)
+        
+    def append(self, url, frame=None, qty=1, direction='horizontal', margin=0):
+        """
+        Append a texture asset from an image file name (or URL)
+        url : the name of the file
+        frame : a frame that defines a region inside the image (if desired)
+        qty : a string of qty frames may be defined for animation purposes
+        direction : 'horizontal' or 'vertical' orientation of animation frames
+        margin : the number of pixels between frames, if any
+        """
+        GFX = GFX_Texture_fromImage(url, False)
+        dx = 0
+        dy = 0
+        for i in range(qty):
+            if not frame is None:
+                if direction == 'horizontal':
+                    dx = frame.w + margin
+                elif direction == 'vertical':
+                    dy = frame.h + margin
+                f = Frame(frame.x + dx * i, frame.y + dy * i, frame.w, frame.h)
+                GFX = self._subframe(GFX, f)
+            self.GFXlist.append(GFX)
+    
 
 class Color(object):
 
@@ -45,20 +121,24 @@ class LineStyle(object):
         """
         width : line width pixels
         color : integer e.g. 0xffff00
-        alpha : float 0-1
-        
         """
         self.width = width
         self.color = color
 
-class GraphicsAsset(object):
+class GraphicsAsset(Asset):
     
+    def __init__(self):
+        super().__init__()
+        GFX_Graphics.clear()
+        
     def destroy(self):
-        self.GFX.destroy()
+        if hasattr(self, 'GFX'):
+            self.GFX.destroy()
 
 class CurveAsset(GraphicsAsset):
 
     def __init__(self, line):
+        super().__init__()
         GFX_Graphics.lineStyle(line.width, line.color.color, line.color.alpha)
 
 class ShapeAsset(CurveAsset):
@@ -74,7 +154,7 @@ class RectangleAsset(ShapeAsset):
         super().__init__(line, fill)
         self.width = width
         self.height = height
-        self.GFX = GFX_Graphics.drawRect(0, 0, self.width, self.height)
+        self.GFX = GFX_Graphics.drawRect(0, 0, self.width, self.height).clone()
         self.GFX.visible = False
         
 
@@ -83,7 +163,7 @@ class CircleAsset(ShapeAsset):
     def __init__(self, radius, line, fill):
         super().__init__(line, fill)
         self.radius = radius
-        self.GFX = GFX_Graphics.drawCircle(0, 0, self.radius)
+        self.GFX = GFX_Graphics.drawCircle(0, 0, self.radius).clone()
         self.GFX.visible = False
         
 class EllipseAsset(ShapeAsset):
@@ -92,7 +172,7 @@ class EllipseAsset(ShapeAsset):
         super().__init__(line, fill)
         self.halfw = halfw
         self.halfh = halfh
-        self.GFX = GFX_Graphics.drawEllipse(0, 0, self.halfw, self.halfh)
+        self.GFX = GFX_Graphics.drawEllipse(0, 0, self.halfw, self.halfh).clone()
         self.GFX.visible = False
         
 class PolygonAsset(ShapeAsset):
@@ -103,7 +183,7 @@ class PolygonAsset(ShapeAsset):
         jpath = []
         for point in self.path:
             jpath.extend(point)
-        self.GFX = GFX_Graphics.drawPolygon(jpath)
+        self.GFX = GFX_Graphics.drawPolygon(jpath).clone()
         self.GFX.visible = False
     
 
@@ -114,7 +194,7 @@ class LineAsset(CurveAsset):
         self.deltaX = x
         self.deltaY = y
         GFX_Graphics.moveTo(0, 0)
-        self.GFX = GFX_Graphics.lineTo(self.deltaX, self.deltaY)
+        self.GFX = GFX_Graphics.lineTo(self.deltaX, self.deltaY).clone()
 
 class TextAsset(GraphicsAsset):
     
@@ -128,7 +208,7 @@ class TextAsset(GraphicsAsset):
         align = : align style, default "left". "left", "center", "right"
 
         """
-
+        super().__init__()
         self.text = text
         self.style = kwargs.get('style', '20px Arial')
         self.width = kwargs.get('width', 100)
@@ -154,16 +234,20 @@ class TextAsset(GraphicsAsset):
 
 class Sprite(object):
     
+    _rectCollision = "rect"
+    _circCollision = "circ"
     
-    def __init__(self, asset, position = (0,0), frame = False):
+    def __init__(self, asset, pos=(0,0)):
+        """
+        asset: an image or graphics asset instance
+        pos: keyward parameter, a tuple with x,y coordinates
+        e.g. Sprite(asset, pos=(100,100))
+        """
         self.app = App()
+        self.index = 0
         if type(asset) == ImageAsset:
             self.asset = asset
-            if (frame):
-                self.GFX = GFX_Sprite(
-                    GFX_Texture(asset.GFX, frame.GFX))
-            else:
-                self.GFX = GFX_Sprite(asset.GFX)
+            self.GFX = GFX_Sprite(asset.GFX) # GFX is PIXI Sprite
         elif type(asset) in [RectangleAsset, 
             CircleAsset, 
             EllipseAsset, 
@@ -171,22 +255,81 @@ class Sprite(object):
             LineAsset,
             ]:
             self.asset = asset
-            self.GFX = asset.GFX.clone()
+            self.GFX = asset.GFX.clone() # GFX is PIXI Graphics (from Sprite)
             self.GFX.visible = True
         elif type(asset) in [TextAsset]:
             self.asset = asset.clone()
-            self.GFX = self.asset.GFX
+            self.GFX = self.asset.GFX # GFX is PIXI Text (from Sprite)
             self.GFX.visible = True
-        self.position = position
+        self.position = pos
+        self._setExtents()
+        self.rectangularCollisionModel()
         self.app._add(self)
         
+    def _setExtents(self):
+        """
+        update min/max x and y based on position, center, width, height
+        """
+        self.xmin = int(self.x - self.fxcenter * self.width)
+        self.xmax = int(self.x + (1 - self.fxcenter) * self.width)
+        self.ymin = int(self.y - self.fycenter * self.height)
+        self.ymax = int(self.y + (1 - self.fycenter) * self.height)
+        self.radius = int((self.width + self.height)/4)
+        self.xcenter = int(self.x + (1 - self.fxcenter) * self.width / 2)
+        self.ycenter = int(self.y + (1 - self.fycenter) * self.height / 2)
+
+    def firstImage(self):
+        self.GFX.texture = self.asset[0]
+    
+    def lastImage(self):
+        self.GFX.texture = self.asset[-1]
+    
+    def nextImage(self, wrap = False):
+        self.index += 1
+        if self.index >= len(self.asset):
+            if wrap:
+                self.index = 0
+            else:
+                self.index = len(self.asset)-1
+        self.GFX.texture = self.asset[self.index]
+    
+    def prevImage(self, wreap = False):
+        self.index -= 1
+        if self.index < 0:
+            if wrap:
+                self.index = len(self.asset)-1
+            else:
+                self.index = 0
+        self.GFX.texture = self.asset[self.index]
+    
+    def setImage(self, index=0):
+        self.index = index
+        self.GFX.texture = self.asset[self.index]
+
+    def rectangularCollisionModel(self):
+        self._collisionStyle = type(self)._rectCollision
+
+    def circularCollisionModel(self):
+        self._collisionStyle = type(self)._circCollision
+        
+
     @property
     def width(self):
         return self.GFX.width
         
+    @width.setter
+    def width(self, value):
+        self.GFX.width = value
+        self._setExtents()
+    
     @property
     def height(self):
         return self.GFX.height
+    
+    @height.setter
+    def height(self, value):
+        self.GFX.height = value
+        self._setExtents()
         
     @property
     def x(self):
@@ -195,6 +338,7 @@ class Sprite(object):
     @x.setter
     def x(self, value):
         self.GFX.position.x = value
+        self._setExtents()
         
     @property
     def y(self):
@@ -203,7 +347,8 @@ class Sprite(object):
     @y.setter
     def y(self, value):
         self.GFX.position.y = value
-        
+        self._setExtents()
+    
     @property
     def position(self):
         return (self.GFX.position.x, self.GFX.position.y)
@@ -212,7 +357,66 @@ class Sprite(object):
     def position(self, value):
         self.GFX.position.x = value[0]
         self.GFX.position.y = value[1]
+        self._setExtents()
         
+    @property
+    def fxcenter(self):
+        """
+        Float: 0-1
+        """
+        try:
+            return self.GFX.anchor.x
+        except:
+            return 0.0
+        
+    @fxcenter.setter
+    def fxcenter(self, value):
+        """
+        Float: 0-1
+        """
+        try:
+            self.GFX.anchor.x = value
+            self._setExtents()
+        except:
+            pass
+        
+    @property
+    def fycenter(self):
+        """
+        Float: 0-1
+        """
+        try:
+            return self.GFX.anchor.y
+        except:
+            return 0.0
+        
+    @fycenter.setter
+    def fycenter(self, value):
+        """
+        Float: 0-1
+        """
+        try:
+            self.GFX.anchor.y = value
+            self._setExtents()
+        except:
+            pass
+    
+    @property
+    def center(self):
+        try:
+            return (self.GFX.anchor.x, self.GFX.anchor.y)
+        except:
+            return (0.0, 0.0)
+        
+    @center.setter
+    def center(self, value):
+        try:
+            self.GFX.anchor.x = value[0]
+            self.GFX.anchor.y = value[1]
+            self._setExtents()
+        except:
+            pass
+    
     @property
     def visible(self):
         return self.PIXI.visible
@@ -220,6 +424,46 @@ class Sprite(object):
     @visible.setter
     def visible(self, value):
         self.GFX.visible = value
+
+    @property
+    def scale(self):
+        return self.GFX.scale.x
+        
+    @scale.setter
+    def scale(self, value):
+        self.GFX.scale.x = value
+        self.GFX.scale.y = value
+        self._setExtents()
+
+    @property
+    def rotation(self):
+        return self.GFX.rotation
+        
+    @rotation.setter
+    def rotation(self, value):
+        self.GFX.rotation = value
+
+    def collidingWith(self, obj):
+        """
+        Very simple: does not work well with rotated sprites!
+        """
+        if self is obj:
+            return False
+        elif self._collisionStyle == obj._collisionStyle == type(self)._circCollision:
+            dist2 = (self.xcenter - obj.xcenter)**2 + (self.ycenter - obj.ycenter)**2
+            return dist2 < (self.radius + obj.radius)**2
+        else:
+            return (not (self.xmin > obj.xmax
+                or self.xmax < obj.xmin
+                or self.ymin > obj.ymax
+                or self.ymax < obj.ymin))
+
+    def collidingWithSprites(self, sclass = None):
+        if sclass is None:
+            slist = self.app.spritelist
+        else:
+            slist = self.app.getSpritesbyClass(sclass)
+        return list(filter(self.collidingWith, slist))
 
     def destroy(self):
         self.app._remove(self)
@@ -420,6 +664,8 @@ class App(object):
             self.spritelist = []
         if not hasattr(self, 'eventdict'):
             self.eventdict = {}
+        if not hasattr(self, 'spritesdict'):
+            self.spritesdict = {}
         if len(args) == 2:
             self.width = args[0]
             self.height = args[1]
@@ -428,7 +674,6 @@ class App(object):
             if len(self.spritelist) > 0:
                 for sprite in self.spritelist:
                     self.win.add(sprite.GFX)
-
             self.win.bind(KeyEvent.keydown, self._keyEvent)
             self.win.bind(KeyEvent.keyup, self._keyEvent)
             self.win.bind(KeyEvent.keypress, self._keyEvent)
@@ -464,10 +709,15 @@ class App(object):
         if hasattr(self, 'win'):
             self.win.add(obj.GFX)
         self.spritelist.append(obj)
+        if type(obj) not in self.spritesdict:
+            self.spritesdict[type(obj)] = []
+        self.spritesdict[type(obj)].append(obj)
         
     def _remove(self, obj):
-        self.win.remove(obj.GFX)
+        if hasattr(self, 'win'):
+            self.win.remove(obj.GFX)
         self.spritelist.remove(obj)
+        self.spritesdict[type(obj)].remove(obj)
         
     def _animate(self, dummy):
         if self.userfunc:
@@ -484,7 +734,6 @@ class App(object):
         eventtype : "keydown", "keyup", "keypress"
         key : e.g. "space", "a" or "*" for ALL!
         callback : function name to receive events
-        
         """
         evtlist = self.eventdict.get((eventtype, key), [])
         evtlist.append(callback)
@@ -501,6 +750,9 @@ class App(object):
     def unlistenMouseEvent(self, eventtype, callback):
         self.eventdict[eventtype].remove(callback)
         
+    def getSpritesbyClass(self, sclass):
+        return self.spritesdict.get(sclass, [])
+        
     def step(self):
         pass
     
@@ -512,8 +764,8 @@ if __name__ == '__main__':
 
     class bunnySprite(Sprite):
 
-        def __init__(self, asset, position = (0,0), frame = False):
-            super().__init__(asset, position, frame)
+        def __init__(self, *assets, pos = (0,0)):
+            super().__init__(*assets, pos=pos)
             self.app.listenKeyEvent(KeyEvent.keydown, "space", self.spaceKey)
             self.app.listenKeyEvent(KeyEvent.keydown, "left arrow", self.leftKey)
             self.app.listenKeyEvent(KeyEvent.keydown, "right arrow", self.rightKey)
@@ -529,7 +781,12 @@ if __name__ == '__main__':
             self.app.listenMouseEvent(MouseEvent.mousemove, self.mousemove)
             self.vx = 0
             self.vy = 0
-            
+            self.xcenter = 0.5
+            self.ycenter = 0.5
+            self.count = 0
+            #self.scale = 0.5
+            #self.circularCollisionModel()
+
         def mouse(self, event):
             if event.wheelDelta > 0:
                 self.spring1.play()
@@ -546,21 +803,29 @@ if __name__ == '__main__':
         def mousemove(self, event):
             event.consumed = True
         
+        def checkCollide(self):
+            if self.collidingWithSprites(bunnySprite):
+                self.app.springsound.play()
+            
         def leftKey(self, event):
             self.vx = -1
             event.consumed = True
+            self.checkCollide()
 
         def rightKey(self, event):
             self.vx = 1
             event.consumed = True
+            self.checkCollide()
             
         def upKey(self, event):
             self.vy = -1
             event.consumed = True
+            self.checkCollide()
         
         def downKey(self, event):
             self.vy = 1
             event.consumed = True
+            self.checkCollide()
             
         def horizUp(self, event):
             self.vx = 0
@@ -574,9 +839,13 @@ if __name__ == '__main__':
             pass
         
         def step(self):
+            self.count += 1
             self.x += self.vx*2
             self.y += self.vy*2
-
+            if self.count % 10 == 0:
+                pass
+                self.nextImage(True)
+            
     class myApp(App):
         def __init__(self, width, height):
             super().__init__(width, height)
@@ -588,24 +857,33 @@ if __name__ == '__main__':
             bunnyurl = "bunny.png"
             bunny = ImageAsset(bunnyurl)
             
+            bunniesurl = "bunnysheet5.png"
+            bunniesframe = Frame(178,217,30,29)
+            # this gives us a series of frames from a sprite sheet
+            # the frame (above) defines the size and location of the first
+            # image. The ImageAsset call (below) says how many frames there
+            # will be, in what direction from the first, and how many pixels
+            # separate each frame
+            bunnies = ImageAsset(bunniesurl, bunniesframe, 4, 'horizontal', 2)
+
             fcolor = Color(0x5050ff, 0.8)
             lcolor = Color(0, 1)
-            line = LineStyle(3, lcolor)
-            #rect = RectangleAsset(self, 100, 150, line, fcolor)
-            #circ = CircleAsset(self, 50, line, fcolor)
-            #ell = EllipseAsset(self, 50, 75, line, fcolor)
-            #poly = PolygonAsset(self, [(0,0), (50,50), (50,100), (0,0)], line, fcolor)
-            #line = LineAsset(self, -50, 75, line)
+            linesty = LineStyle(3, lcolor)
+            rect = RectangleAsset(100, 150, linesty, fcolor)
+            circ = CircleAsset(50, linesty, fcolor)
+            poly = PolygonAsset([(0,0), (50,50), (50,100), (0,0)], linesty, fcolor)
+            line = LineAsset(-50, 75, linesty)
+            ell = EllipseAsset(50, 75, linesty, fcolor)
             text = TextAsset("what up? big long text string!")
             
             
             for x in range(50,500,150):
                 for y in range(50,500,150):
-                    self.bunnies.append(bunnySprite(text, (x,y)))
-            self.direction = 5
+                    #self.bunnies.append(bunnySprite(text, pos=(x,y)))
+                    self.bunnies.append(bunnySprite(bunnies, pos=(x,y)))
             self.spring = SoundAsset("spring.wav")
             self.springsound =Sound(self.spring)
-            self.springsound.loop()
+            #self.springsound.loop()
 
 
         def step(self):
@@ -617,6 +895,5 @@ if __name__ == '__main__':
             #self.direction *= -1
 
     app = myApp(500, 400)
-    
-    
+
     app.run()
