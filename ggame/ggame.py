@@ -59,6 +59,17 @@ class Asset(object):
                 self.i += 1
                 return self.obj.GFXlist[self.i]
         return Iter(self)
+
+    def destroy(self):
+        if hasattr(self, 'GFX'):
+            try:
+                for gfx in self.GFXlist:
+                    try:
+                        gfx.destroy(True)
+                    except:
+                        pass
+            except:
+                pass
         
         
 class ImageAsset(Asset):
@@ -76,7 +87,7 @@ class ImageAsset(Asset):
         self.url = url
         del self.GFXlist[0]
         self.append(url, frame, qty, direction, margin)
-        
+
     def _subframe(self, texture, frame):
         return GFX_Texture(texture, frame.GFX)
         
@@ -101,7 +112,7 @@ class ImageAsset(Asset):
                 f = Frame(frame.x + dx * i, frame.y + dy * i, frame.w, frame.h)
                 GFX = self._subframe(GFX, f)
             self.GFXlist.append(GFX)
-    
+
 
 class Color(object):
 
@@ -131,9 +142,6 @@ class GraphicsAsset(Asset):
         super().__init__()
         GFX_Graphics.clear()
         
-    def destroy(self):
-        if hasattr(self, 'GFX'):
-            self.GFX.destroy()
 
 class CurveAsset(GraphicsAsset):
 
@@ -247,7 +255,11 @@ class Sprite(object):
         self.index = 0
         if type(asset) == ImageAsset:
             self.asset = asset
-            self.GFX = GFX_Sprite(asset.GFX) # GFX is PIXI Sprite
+            try:
+                #self.GFX = GFX_Sprite()
+                self.GFX = GFX_Sprite(asset.GFX) # GFX is PIXI Sprite
+            except:
+                self.GFX = None
         elif type(asset) in [RectangleAsset, 
             CircleAsset, 
             EllipseAsset, 
@@ -467,6 +479,7 @@ class Sprite(object):
 
     def destroy(self):
         self.app._remove(self)
+        self.GFX.destroy()
         self.asset.destroy()
 
 
@@ -715,7 +728,10 @@ class App(object):
         
     def _remove(self, obj):
         if hasattr(self, 'win'):
-            self.win.remove(obj.GFX)
+            try:
+                self.win.remove(obj.GFX)
+            except:
+                pass
         self.spritelist.remove(obj)
         self.spritesdict[type(obj)].remove(obj)
         
@@ -728,7 +744,7 @@ class App(object):
 
     def destroy(self, dummy):
         self.win.destroy()
-        for s in self.spritelist:
+        for s in list(self.spritelist):
             s.destroy()
         del self.spritelist
         del self.spritesdict
