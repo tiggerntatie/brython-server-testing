@@ -119,7 +119,7 @@ class myApp(App):
             for y in range(50,500,150):
                 #self.bunnies.append(bunnySprite(text, pos=(x,y)))
                 self.bunnies.append(bunnySprite(bunnies, pos=(x,y)))
-        self.spring = SoundAsset("spring.wav")
+        self.spring = SoundAsset("ggame/spring.wav")
         self.springsound =Sound(self.spring)
         #self.springsound.loop()
 
