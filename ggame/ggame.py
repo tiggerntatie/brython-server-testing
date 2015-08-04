@@ -1,4 +1,4 @@
-from sysdeps import *
+from ggame.sysdeps import *
 
 class Frame(object):
 
