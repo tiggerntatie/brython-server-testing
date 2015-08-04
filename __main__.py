@@ -1,2 +1,2 @@
-print("Hello from https://github.com/tiggerntatie/brython-server-testing")
+print("Hello world from https://github.com/tiggerntatie/brython-server-testing")
 
