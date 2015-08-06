@@ -1,3 +1,5 @@
+![automatic build status with Travis](https://travis-ci.org/BrythonServer/ggame.svg?branch=master)
+
 # ggame
 The simple cross-platform sprite and game platform for Brython Server (Pygame, Tkinter to follow?).
 
@@ -91,7 +93,6 @@ class DemoApp(App):
         """
         for bunny in self.spritelist:
             bunny.step()
-
 
 
 # Create the app

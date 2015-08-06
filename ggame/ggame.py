@@ -1,14 +1,46 @@
-from sysdeps import *
+from ggame.sysdeps import *
 
 class Frame(object):
 
 
     def __init__(self, x, y, w, h):
+        self.GFX = GFX_Rectangle(x,y,w,h)
         self.x = x
         self.y = y
         self.w = w
         self.h = h
-        self.GFX = GFX_Rectangle(x,y,w,h)
+    
+    @property
+    def x(self):
+        return self.GFX.x
+    
+    @x.setter
+    def x(self, value):
+        self.GFX.x = value
+        
+    @property
+    def y(self):
+        return self.GFX.y
+    
+    @y.setter
+    def y(self, value):
+        self.GFX.y = value
+    
+    @property
+    def w(self):
+        return self.GFX.width
+    
+    @w.setter
+    def w(self, value):
+        self.GFX.width = value
+        
+    @property
+    def h(self):
+        return self.GFX.height
+        
+    @h.setter
+    def h(self, value):
+        self.GFX.height = value
     
     @property
     def center(self):
@@ -203,6 +235,7 @@ class LineAsset(CurveAsset):
         self.deltaY = y
         GFX_Graphics.moveTo(0, 0)
         self.GFX = GFX_Graphics.lineTo(self.deltaX, self.deltaY).clone()
+        self.GFX.visible = False
 
 class TextAsset(GraphicsAsset):
     
@@ -431,7 +464,7 @@ class Sprite(object):
     
     @property
     def visible(self):
-        return self.PIXI.visible
+        return self.GFX.visible
     
     @visible.setter
     def visible(self, value):
@@ -659,43 +692,33 @@ class KeyEvent(Event):
 
 
 class App(object):
-    """
-    Singleton base class for ggame applications
-    """
 
-    __instance = None
-
-    def __new__(cls, *args):
-        if App.__instance is None:
-            App.__instance = object.__new__(cls)
-        return App.__instance
-        
+    spritelist = []
+    eventdict = {}
+    spritesdict = {}
+    spritesadded = False
+    win = None
 
     def __init__(self, *args):
 
-        if not hasattr(self, 'spritelist'):
-            self.spritelist = []
-        if not hasattr(self, 'eventdict'):
-            self.eventdict = {}
-        if not hasattr(self, 'spritesdict'):
-            self.spritesdict = {}
-        if len(args) == 2:
+        if App.win == None and len(args) == 2:
             self.width = args[0]
             self.height = args[1]
-            self.win = GFX_Window(self.width, self.height, self.destroy)
+            App.win = GFX_Window(self.width, self.height, self.destroy)
             # Add existing sprites to the window
-            if len(self.spritelist) > 0:
-                for sprite in self.spritelist:
-                    self.win.add(sprite.GFX)
-            self.win.bind(KeyEvent.keydown, self._keyEvent)
-            self.win.bind(KeyEvent.keyup, self._keyEvent)
-            self.win.bind(KeyEvent.keypress, self._keyEvent)
-            self.win.bind(MouseEvent.mousewheel, self._mouseEvent)
-            self.win.bind(MouseEvent.mousemove, self._mouseEvent)
-            self.win.bind(MouseEvent.mousedown, self._mouseEvent)
-            self.win.bind(MouseEvent.mouseup, self._mouseEvent)
-            self.win.bind(MouseEvent.click, self._mouseEvent)
-            self.win.bind(MouseEvent.dblclick, self._mouseEvent)
+            if not App.spritesadded and len(App.spritelist) > 0:
+                App.spritesadded = True
+                for sprite in App.spritelist:
+                    App.win.add(sprite.GFX)
+            App.win.bind(KeyEvent.keydown, self._keyEvent)
+            App.win.bind(KeyEvent.keyup, self._keyEvent)
+            App.win.bind(KeyEvent.keypress, self._keyEvent)
+            App.win.bind(MouseEvent.mousewheel, self._mouseEvent)
+            App.win.bind(MouseEvent.mousemove, self._mouseEvent)
+            App.win.bind(MouseEvent.mousedown, self._mouseEvent)
+            App.win.bind(MouseEvent.mouseup, self._mouseEvent)
+            App.win.bind(MouseEvent.click, self._mouseEvent)
+            App.win.bind(MouseEvent.dblclick, self._mouseEvent)
 
         
     def _routeEvent(self, event, evtlist):
@@ -718,37 +741,34 @@ class App(object):
             self._routeEvent(evt, evtlist)
         
     def _add(self, obj):
-        # only add sprites to window if it exists, otherwise will happen later
-        if hasattr(self, 'win'):
-            self.win.add(obj.GFX)
-        self.spritelist.append(obj)
-        if type(obj) not in self.spritesdict:
-            self.spritesdict[type(obj)] = []
-        self.spritesdict[type(obj)].append(obj)
+        if App.win != None:
+            App.win.add(obj.GFX)
+        App.spritelist.append(obj)
+        if type(obj) not in App.spritesdict:
+            App.spritesdict[type(obj)] = []
+        App.spritesdict[type(obj)].append(obj)
         
     def _remove(self, obj):
-        if hasattr(self, 'win'):
-            try:
-                self.win.remove(obj.GFX)
-            except:
-                pass
-        self.spritelist.remove(obj)
-        self.spritesdict[type(obj)].remove(obj)
+        if App.win != None:
+            App.win.remove(obj.GFX)
+        App.spritelist.remove(obj)
+        App.spritesdict[type(obj)].remove(obj)
         
     def _animate(self, dummy):
         if self.userfunc:
             self.userfunc()
         else:
             self.step()
-        self.win.animate(self._animate)
+        App.win.animate(self._animate)
 
     def destroy(self, dummy):
-        self.win.destroy()
+        App.win.destroy()
+        App.win = None
         for s in list(self.spritelist):
             s.destroy()
-        del self.spritelist
-        del self.spritesdict
-        App.__instance = None
+        App.spritelist = []
+        App.spritesdict = {}
+        App.eventdict = {}
 
     def listenKeyEvent(self, eventtype, key, callback):
         """
@@ -756,20 +776,20 @@ class App(object):
         key : e.g. "space", "a" or "*" for ALL!
         callback : function name to receive events
         """
-        evtlist = self.eventdict.get((eventtype, key), [])
+        evtlist = App.eventdict.get((eventtype, key), [])
         evtlist.append(callback)
-        self.eventdict[(eventtype, key)] = evtlist
+        App.eventdict[(eventtype, key)] = evtlist
 
     def listenMouseEvent(self, eventtype, callback):
-        evtlist = self.eventdict.get(eventtype, [])
+        evtlist = App.eventdict.get(eventtype, [])
         evtlist.append(callback)
-        self.eventdict[eventtype] = evtlist
+        App.eventdict[eventtype] = evtlist
         
     def unlistenKeyEvent(self, eventtype, key, callback):
-        self.eventdict[(eventtype,key)].remove(callback)
+        App.eventdict[(eventtype,key)].remove(callback)
 
     def unlistenMouseEvent(self, eventtype, callback):
-        self.eventdict[eventtype].remove(callback)
+        App.eventdict[eventtype].remove(callback)
         
     def getSpritesbyClass(self, sclass):
         return self.spritesdict.get(sclass, [])
@@ -779,142 +799,5 @@ class App(object):
     
     def run(self, userfunc = None):
         self.userfunc = userfunc
-        self.win.animate(self._animate)
+        App.win.animate(self._animate)
 
-if __name__ == '__main__':
-
-    class bunnySprite(Sprite):
-
-        def __init__(self, *assets, pos = (0,0)):
-            super().__init__(*assets, pos=pos)
-            self.app.listenKeyEvent(KeyEvent.keydown, "space", self.spaceKey)
-            self.app.listenKeyEvent(KeyEvent.keydown, "left arrow", self.leftKey)
-            self.app.listenKeyEvent(KeyEvent.keydown, "right arrow", self.rightKey)
-            self.app.listenKeyEvent(KeyEvent.keydown, "up arrow", self.upKey)
-            self.app.listenKeyEvent(KeyEvent.keydown, "down arrow", self.downKey)
-            self.app.listenKeyEvent(KeyEvent.keyup, "left arrow", self.horizUp)
-            self.app.listenKeyEvent(KeyEvent.keyup, "right arrow", self.horizUp)
-            self.app.listenKeyEvent(KeyEvent.keyup, "up arrow", self.vertUp)
-            self.app.listenKeyEvent(KeyEvent.keyup, "down arrow", self.vertUp)
-            self.app.listenMouseEvent(MouseEvent.mousewheel, self.mouse)
-            self.app.listenMouseEvent(MouseEvent.click, self.mouseclick)
-            self.app.listenMouseEvent(MouseEvent.dblclick, self.doubleclick)
-            self.app.listenMouseEvent(MouseEvent.mousemove, self.mousemove)
-            self.vx = 0
-            self.vy = 0
-            self.xcenter = 0.5
-            self.ycenter = 0.5
-            self.count = 0
-            #self.scale = 0.5
-            #self.circularCollisionModel()
-
-        def mouse(self, event):
-            if event.wheelDelta > 0:
-                self.spring1.play()
-            elif event.wheelDelta < 0:
-                self.spring2.play()
-            event.consumed = True
-            
-        def mouseclick(self, event):
-            event.consumed = True
-            
-        def doubleclick(self, event):
-            event.consumed = True
-            
-        def mousemove(self, event):
-            event.consumed = True
-        
-        def checkCollide(self):
-            if self.collidingWithSprites(bunnySprite):
-                self.app.springsound.play()
-            
-        def leftKey(self, event):
-            self.vx = -1
-            event.consumed = True
-            self.checkCollide()
-
-        def rightKey(self, event):
-            self.vx = 1
-            event.consumed = True
-            self.checkCollide()
-            
-        def upKey(self, event):
-            self.vy = -1
-            event.consumed = True
-            self.checkCollide()
-        
-        def downKey(self, event):
-            self.vy = 1
-            event.consumed = True
-            self.checkCollide()
-            
-        def horizUp(self, event):
-            self.vx = 0
-            event.consumed = True
-            
-        def vertUp(self, event):
-            self.vy = 0
-            event.consumed = True
-        
-        def spaceKey(self, event):
-            pass
-        
-        def step(self):
-            self.count += 1
-            self.x += self.vx*2
-            self.y += self.vy*2
-            if self.count % 10 == 0:
-                pass
-                self.nextImage(True)
-            
-    class myApp(App):
-        def __init__(self, width, height):
-            super().__init__(width, height)
-            grassurl = "grass_texture239.jpg"
-            grass = ImageAsset(grassurl)
-            Sprite(grass, (0,0))
-            
-            self.bunnies = []
-            bunnyurl = "bunny.png"
-            bunny = ImageAsset(bunnyurl)
-            
-            bunniesurl = "bunnysheet5.png"
-            bunniesframe = Frame(178,217,30,29)
-            # this gives us a series of frames from a sprite sheet
-            # the frame (above) defines the size and location of the first
-            # image. The ImageAsset call (below) says how many frames there
-            # will be, in what direction from the first, and how many pixels
-            # separate each frame
-            bunnies = ImageAsset(bunniesurl, bunniesframe, 4, 'horizontal', 2)
-
-            fcolor = Color(0x5050ff, 0.8)
-            lcolor = Color(0, 1)
-            linesty = LineStyle(3, lcolor)
-            rect = RectangleAsset(100, 150, linesty, fcolor)
-            circ = CircleAsset(50, linesty, fcolor)
-            poly = PolygonAsset([(0,0), (50,50), (50,100), (0,0)], linesty, fcolor)
-            line = LineAsset(-50, 75, linesty)
-            ell = EllipseAsset(50, 75, linesty, fcolor)
-            text = TextAsset("what up? big long text string!")
-            
-            
-            for x in range(50,500,150):
-                for y in range(50,500,150):
-                    #self.bunnies.append(bunnySprite(text, pos=(x,y)))
-                    self.bunnies.append(bunnySprite(bunnies, pos=(x,y)))
-            self.spring = SoundAsset("spring.wav")
-            self.springsound =Sound(self.spring)
-            #self.springsound.loop()
-
-
-        def step(self):
-            for s in self.bunnies:
-                s.step()
-
-            #for s in self.bunnies:
-            #    s.x += self.direction
-            #self.direction *= -1
-
-    app = myApp(500, 400)
-
-    app.run()
