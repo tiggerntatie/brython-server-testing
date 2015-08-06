@@ -2,8 +2,11 @@ from ggame import *
 
 class bunnySprite(Sprite):
 
+    springsound = Sound(SoundAsset("ggame/spring.wav"))
+
     def __init__(self, *assets, pos = (0,0)):
         super().__init__(*assets, pos=pos)
+        self.app = newapp
         self.app.listenKeyEvent(KeyEvent.keydown, "space", self.spaceKey)
         self.app.listenKeyEvent(KeyEvent.keydown, "left arrow", self.leftKey)
         self.app.listenKeyEvent(KeyEvent.keydown, "right arrow", self.rightKey)
@@ -43,7 +46,7 @@ class bunnySprite(Sprite):
     
     def checkCollide(self):
         if self.collidingWithSprites(bunnySprite):
-            self.app.springsound.play()
+            self.springsound.play()
         
     def leftKey(self, event):
         self.vx = -1
@@ -119,8 +122,6 @@ class myApp(App):
             for y in range(50,500,150):
                 #self.bunnies.append(bunnySprite(text, pos=(x,y)))
                 self.bunnies.append(bunnySprite(bunnies, pos=(x,y)))
-        self.spring = SoundAsset("ggame/spring.wav")
-        self.springsound =Sound(self.spring)
         #self.springsound.loop()
 
 
