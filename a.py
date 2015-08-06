@@ -6,7 +6,6 @@ class bunnySprite(Sprite):
 
     def __init__(self, *assets, pos = (0,0)):
         super().__init__(*assets, pos=pos)
-        self.app = newapp
         self.app.listenKeyEvent(KeyEvent.keydown, "space", self.spaceKey)
         self.app.listenKeyEvent(KeyEvent.keydown, "left arrow", self.leftKey)
         self.app.listenKeyEvent(KeyEvent.keydown, "right arrow", self.rightKey)
