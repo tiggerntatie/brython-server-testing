@@ -1,6 +1,6 @@
 class t0(object):
     def __init__(self):
-        self.zz = 'top'
+        self.zz = top
 
 
 class t1(t0):
