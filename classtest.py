@@ -5,6 +5,7 @@ class t0(object):
 
 class t1(t0):
     def __init__(self):
+        super().__init__()
         self.x = 5
         self.z = 'q'
         
