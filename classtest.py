@@ -14,8 +14,3 @@ class t2(t1):
         super().__init__()
         self.y = 6
         
-t = t2()
-
-print(t.x)
-print(t.y)
-print(t.zz)
