@@ -5,4 +5,5 @@ class t1(object):
 
 class t0(t1):
     def __init__(self):
+        super().__init__()
         self.yy = 'right'
