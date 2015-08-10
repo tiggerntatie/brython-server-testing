@@ -1,4 +1,4 @@
 from classtest import *
 
-t = t2()
+t = t0()
 print (t.zz)
