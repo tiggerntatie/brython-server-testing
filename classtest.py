@@ -14,3 +14,4 @@ class t2(t1):
         super().__init__()
         self.y = 6
         
+T = t2()
